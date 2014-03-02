@@ -16,14 +16,6 @@
 	A: .word 0 0 0 0 0 0 0 0
 	B: .word 0 0 0 0 0 0 0 0
 	C: .word 0 0 0 0 0 0 0 0
-	
-	printMove: .asciiz "Move disk "
-	printFrom: .asciiz " from "
-	printTo:   .asciiz " to "
-	printBr:   .asciiz "\n"
-
-.text 
-
 .text 
 
 	add $a0, $zero, 3	#  n = number of disks
@@ -45,7 +37,7 @@ A_for:	beq $t0, $zero, main	# Loads disks numbers to A tower (from n to 1)
 main:				
 	jal hanoi		
 	j return
-	
+
 
 hanoi:  # Non-recursive section
 	addi $t0, $zero, 1
@@ -60,7 +52,7 @@ else:	# Recursive section
 	sw $a2, 8($sp)		#   pointer to aux_0
 	sw $a3, 12($sp)		#   pointer to to_0
 	sw $ra, 16($sp)
-	
+
 	add $t1, $zero, $a2	# Swap $a2 (aux) and $a3 (to)
 	add $a2, $zero, $a3
 	add $a3, $zero, $t1
@@ -69,7 +61,7 @@ else:	# Recursive section
 	add $s3, $zero, $t2
 	addi $a0, $a0, -1
 	jal hanoi		# hanoi(n - 1 [a0], from=from [a1], aux=to [a2], to=aux [a3])
-	
+
 	add $t2, $zero, $s2	# unswap $s2 and $s3, needed so that $si always matches $ai
 	add $s2, $zero, $s3
 	add $s3, $zero, $t2			
@@ -80,7 +72,7 @@ else:	# Recursive section
 	lw $a3, 12($sp)		#   to
 	lw $ra, 16($sp)
 	jal simulate
-	
+
 	add $t1, $zero, $a2	# swap $a1 (from) and $a2 (aux)
 	add $a2, $zero, $a1
 	add $a1, $zero, $t1
@@ -89,25 +81,24 @@ else:	# Recursive section
 	add $s1, $zero, $t2
 	addi $a0, $a0, -1
 	jal hanoi 		# hanoi(n - 1 [a0], from=aux [a1], aux=from [a2], to=to [a3])
-	
+
 	add $t2, $zero, $s2	# unswap $s1 and $s2, needed so that $si always matches $ai
 	add $s2, $zero, $s1
 	add $s1, $zero, $t2
-	
+
 	lw $ra, 16($sp)
 	addi $sp, $sp, 20
 	jr $ra
 
-		
+
 simulate:  # n = $a0, from = $a1, to = $a3
 	add $t0, $a1, $s1 	# Point to disk on top of source tower
 	sw $zero, 0($t0)	# Remove disk from top of source tower
 	add $s1, $s1, -4
-	
+
 	add $s3, $s3, 4		# Point to next free space on top of destiny tower
 	add $t0, $a3, $s3	
 	sw $a0, 0($t0)		# Store disk from top of source tower
 	jr $ra
-							
+
 return: 
-	

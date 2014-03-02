@@ -10,10 +10,6 @@
 #   - a3 -> goal tower (C)
 
 .data
-	A: .word 0 0 0 0 0 0 0 0
-	B: .word 0 0 0 0 0 0 0 0
-	C: .word 0 0 0 0 0 0 0 0
-	
 	printMove: .asciiz "Move disk "
 	printFrom: .asciiz " from "
 	printTo:   .asciiz " to "
