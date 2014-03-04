@@ -34,7 +34,7 @@ A_for:	beq $t0, $zero, main	# Loads disks numbers to A tower (from n to 1)
 	sw $t0, 0($t1)		# Store i
 	addi $t1, $t1, 4	# Increment pointer
 	addi $s1, $s1, 4	# Add one disk
-	sub $t0, $t0, 1		# Decrement i
+	addi $t0, $t0, -1	# Decrement i
 	j A_for 	
 main:				
 	jal hanoi		
