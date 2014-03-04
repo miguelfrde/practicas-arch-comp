@@ -13,21 +13,23 @@
 #   - s3 -> $a3 + $s3 = pointer to disk on top of goal tower
 
 .data
-	A: .word 0 0 0 0 0 0 0 0
-	B: .word 0 0 0 0 0 0 0 0
-	C: .word 0 0 0 0 0 0 0 0
+
 .text 
 
-	add $a0, $zero, 3	#  n = number of disks
-	la $a1, A		# Pointer to source tower A
-	la $a2, B		# Load pointers to the first item of each tower (towers are empty, so they
-	la $a3, C		#   point to the first position)
-	add $s1, $zero, -4	# No disks initially
-	add $s2, $zero, -4
-	add $s3, $zero, -4
+	addi $a0, $zero, 4	#  n = number of disks
+	addi $a1, $zero, 268500992
+	addi $a2, $zero, 268501024
+	addi $a3, $zero, 268501056
+	
+	#la $a1, A		# Pointer to source tower A
+	#la $a2, B		# Load pointers to the first item of each tower (towers are empty, so they
+	#la $a3, C		#   point to the first position)
+	addi $s1, $zero, -4	# No disks initially
+	addi $s2, $zero, -4
+	addi $s3, $zero, -4
 
 	add $t0, $zero, $a0	# Counter i = n
-	la $t1, A		# Pointer to first position of source tower
+	addi $t1, $zero, 268500992		# Pointer to first position of source tower
 A_for:	beq $t0, $zero, main	# Loads disks numbers to A tower (from n to 1)
 	sw $t0, 0($t1)		# Store i
 	addi $t1, $t1, 4	# Increment pointer
@@ -94,9 +96,9 @@ else:	# Recursive section
 simulate:  # n = $a0, from = $a1, to = $a3
 	add $t0, $a1, $s1 	# Point to disk on top of source tower
 	sw $zero, 0($t0)	# Remove disk from top of source tower
-	add $s1, $s1, -4
+	addi $s1, $s1, -4
 
-	add $s3, $s3, 4		# Point to next free space on top of destiny tower
+	addi $s3, $s3, 4		# Point to next free space on top of destiny tower
 	add $t0, $a3, $s3	
 	sw $a0, 0($t0)		# Store disk from top of source tower
 	jr $ra
