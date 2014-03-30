@@ -16,3 +16,17 @@
 *.exe
 *.out
 *.app
+
+# ModelSIM and Quartus files
+Practica2/MIPSQuartusII/*
+Practica2/MIPSModelsim/BasicMIPSProcessorM/work
+Practica2/MIPSModelsim/BasicMIPSProcessorM/ALUResult.dat
+Practica2/MIPSModelsim/BasicMIPSProcessorM/data.dat
+Practica2/MIPSModelsim/BasicMIPSProcessorM/wave.do
+Practica2/MIPSModelsim/BasicMIPSProcessorM/text.dat
+*.cr.mti
+*.mpf
+*.vcd
+*.wlf
+wlft*
+*.v.bak
