@@ -11,7 +11,7 @@ Abrir asm en MARS y ejecutarlo ahí.
 Práctica 2
 ----------
 
-Para editar: añadir la carpeta: `Practica2/MIPSQuartusII/BasicMIPSProcessorQII` y ahí poner el proyecto de Quartus.
+Para editar: añadir la carpeta `Practica2/MIPSQuartusII/BasicMIPSProcessorQII` y ahí poner el proyecto de Quartus.
 
 Para simular: en ModelSIM:
 
