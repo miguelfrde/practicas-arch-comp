@@ -29,6 +29,8 @@ localparam OR  = 4'b0001;
 localparam NOR = 4'b0010;
 localparam ADD = 4'b0011;
 localparam SUB = 4'b0100;
+localparam SLL = 4'b0101;
+localparam SRL = 4'b0110;
    
 always @ (A or B or ALUOperation)
 	begin
@@ -43,6 +45,10 @@ always @ (A or B or ALUOperation)
 				ALUResult = A + B;
 		   SUB:
 				ALUResult = A - B;
+		   SLL:
+				ALUResult = B << A;
+		   SRL:
+				ALUResult = B >> A;
 		default:
 			ALUResult= 0;
 		endcase // case(control)
