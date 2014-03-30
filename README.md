@@ -1,4 +1,4 @@
-practicas-arch-comp
+﻿practicas-arch-comp
 ===================
 
 Prácticas de la clase de Arquitectura de Computadoras, Primavera 2014.
@@ -22,7 +22,7 @@ Para simular: en ModelSIM:
 ```
 noview wave
 vsim work.MIPS_TB
-do C:/path/to/practicas-arch-comp/Practica2/MIPSModelsim/BasicMIPSProcessorM/wave.do
+do C:/path/to/practicas-arch-comp/Practica2/MIPSModelsim/wave.do
 run 200
 ```
 5. Ejecutar: `do sim.do`
