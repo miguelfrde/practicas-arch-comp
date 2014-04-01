@@ -20,6 +20,7 @@ module ALU
 	input [3:0] ALUOperation,
 	input [31:0] A,
 	input [31:0] B,
+	input [4:0] shamt,
 	output reg Zero,
 	output reg [31:0] ALUResult
 );
@@ -32,7 +33,7 @@ localparam SUB = 4'b0100;
 localparam SLL = 4'b0101;
 localparam SRL = 4'b0110;
    
-always @ (A or B or ALUOperation)
+always @ (A or B or ALUOperation or shamt)
 	begin
 		case (ALUOperation)
 			AND:
@@ -46,9 +47,9 @@ always @ (A or B or ALUOperation)
 		   SUB:
 				ALUResult = A - B;
 		   SLL:
-				ALUResult = B << A;
+				ALUResult = B << shamt;
 		   SRL:
-				ALUResult = B >> A;
+				ALUResult = B >> shamt;
 		default:
 			ALUResult= 0;
 		endcase // case(control)

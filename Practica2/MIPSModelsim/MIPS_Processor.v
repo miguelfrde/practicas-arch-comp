@@ -65,9 +65,6 @@ wire [31:0] PCtoBranch_wire;
 wire[31:0] MUX_PC_wire;
 wire[31:0] PC_wire;
 
-wire ALUShamt_wire;
-wire [31:0] ReadData1OrShamt_wire;
-
 wire [27:0] JumpAddressShifted_wire;
 wire [31:0] MUX_PC_JUMP_wire;
 wire Jump_wire;
@@ -287,28 +284,16 @@ ArithmeticLogicUnitControl
 (
 	.ALUOp(ALUOp_wire),
 	.ALUFunction(Instruction_wire[5:0]),
-	.ALUOperation(ALUOperation_wire),
-	.ALUShamt(ALUShamt_wire)
-);
-
-Multiplexer2to1
-#(
-	.NBits(32)
-)
-MUX_ForReadDataAndShamt
-(
-	.Selector(ALUShamt_wire),
-	.MUX_Data0(ReadData1_wire),
-	.MUX_Data1({27'b0, Instruction_wire[10:6]}),
-	.MUX_Output(ReadData1OrShamt_wire)
+	.ALUOperation(ALUOperation_wire)
 );
 
 ALU
 ArithmeticLogicUnit 
 (
 	.ALUOperation(ALUOperation_wire),
-	.A(ReadData1OrShamt_wire),
+	.A(ReadData1_wire),
 	.B(ReadData2OrInmmediate_wire),
+	.shamt(Instruction_wire[10:6]),
 	.Zero(Zero_wire),
 	.ALUResult(ALUResult_wire)
 );
