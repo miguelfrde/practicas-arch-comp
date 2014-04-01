@@ -18,11 +18,11 @@ Para simular: en ModelSIM:
 1. Cambiar directorio a `Practica2/MIPS`
 2. Compile All, Simulate y guardar `wave.do`
 3. Crear archivo `sim.do` con lo siguiente (modificando el path al propio):
-4. Añadir archivo `text.dat` que contenga el programa en "Hexadecimal text", tal cual como MARS lo generó.
 ```
 noview wave
 vsim work.MIPS_TB
 do C:/path/to/practicas-arch-comp/Practica2/MIPSModelsim/wave.do
 run 200
 ```
+4. Añadir archivo `text.dat` que contenga el programa en "Hexadecimal text", tal cual como MARS lo generó.
 5. Ejecutar: `do sim.do`
