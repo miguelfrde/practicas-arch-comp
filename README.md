@@ -15,7 +15,7 @@ Para editar: añadir la carpeta `Practica2/MIPSQuartusII` y ahí poner el proyec
 
 Para simular: en ModelSIM:
 
-1. Cambiar directorio a `Practica2/MIPS`
+1. Cambiar directorio a `Practica2/MIPSModelsim`
 2. Compile All, Simulate y guardar `wave.do`
 3. Crear archivo `sim.do` con lo siguiente (modificando el path al propio):
 ```
