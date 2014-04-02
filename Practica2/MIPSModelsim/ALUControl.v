@@ -14,7 +14,8 @@ module ALUControl
 (
 	input [2:0] ALUOp,
 	input [5:0] ALUFunction,
-	output [3:0] ALUOperation
+	output [3:0] ALUOperation,
+	output JumpRegister
 );
 
 localparam R_Type_AND  = 9'b111_100100;
@@ -24,6 +25,7 @@ localparam R_Type_ADD  = 9'b111_100000;
 localparam R_Type_SUB  = 9'b111_100010;
 localparam R_Type_SLL  = 9'b111_000000;
 localparam R_Type_SRL  = 9'b111_000010;
+localparam R_Type_JR   = 9'b111_001000;
 localparam I_Type_ADDI = 9'b100_xxxxxx;
 localparam I_Type_ORI  = 9'b101_xxxxxx;
 localparam I_Type_ANDI = 9'b110_xxxxxx;
@@ -53,5 +55,6 @@ end
 
 
 assign ALUOperation = ALUControlValues;
+assign JumpRegister = (Selector == R_Type_JR)? 1'b1 : 1'b0;
 
 endmodule

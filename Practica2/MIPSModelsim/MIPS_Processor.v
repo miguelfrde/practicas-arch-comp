@@ -73,6 +73,9 @@ wire JumpAndLink_wire;
 wire [4:0] WriteRegisterOrRA_wire;
 wire [31:0] ALUResultOrPC4_wire;
 
+wire JumpRegister_wire;
+wire [31:0] MUX_PC_JUMP_REG_wire;
+
 integer ALUStatus;
 
 
@@ -100,7 +103,7 @@ ProgramCounter
 (
     .clk(clk),
     .reset(reset),
-    .NewPC(MUX_PC_JUMP_wire),
+    .NewPC(MUX_PC_JUMP_REG_wire),
     .PCValue(PC_wire)
 );
 
@@ -210,6 +213,17 @@ MUX_JUMP
 	.MUX_Output(MUX_PC_JUMP_wire)
 );
 
+Multiplexer2to1
+#(
+	.NBits(32)
+)
+MUX_JUMP_REGISTER
+(
+	.Selector(JumpRegister_wire),
+	.MUX_Data0(MUX_PC_JUMP_wire),
+	.MUX_Data1(ReadData1_wire),
+	.MUX_Output(MUX_PC_JUMP_REG_wire)
+);
 
 //******************************************************************/
 //******************************************************************/
@@ -284,7 +298,8 @@ ArithmeticLogicUnitControl
 (
 	.ALUOp(ALUOp_wire),
 	.ALUFunction(Instruction_wire[5:0]),
-	.ALUOperation(ALUOperation_wire)
+	.ALUOperation(ALUOperation_wire),
+	.JumpRegister(JumpRegister_wire)
 );
 
 ALU
