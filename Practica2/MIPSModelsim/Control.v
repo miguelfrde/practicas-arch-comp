@@ -23,6 +23,7 @@ module Control
 	output RegWrite,
 	output Jump,
 	output JumpAndLink,
+	output LoadUpperImmediate,
 	output [2:0]ALUOp
 );
 
@@ -34,24 +35,26 @@ localparam BEQ = 6'h4;
 localparam BNE = 6'h5;
 localparam J = 6'h2;
 localparam JAL = 6'h3;
+localparam LUI = 6'hf;
 
-reg [12:0] ControlValues;
+reg [13:0] ControlValues;
 
 always@(OP) begin
 	casex(OP)
-		R_Type:      ControlValues = 13'b00_1_001_00_00_111;
-		I_Type_ADDI: ControlValues = 13'b00_0_101_00_00_100;  
-		I_Type_ORI:  ControlValues = 13'b00_0_101_00_00_101;  
-		I_Type_ANDI: ControlValues = 13'b00_0_101_00_00_110;
-		BEQ:         ControlValues = 13'b00_0_000_00_01_001;
-		BNE:         ControlValues = 13'b00_0_000_00_10_001;
-		J:           ControlValues = 13'b01_0_000_00_00_000;
-		JAL:         ControlValues = 13'b11_0_001_00_00_000;
-		default:
-			ControlValues= 13'b000000000000;
+		R_Type:      ControlValues = 14'b0_00_1_001_00_00_111;
+		I_Type_ADDI: ControlValues = 14'b0_00_0_101_00_00_100;  
+		I_Type_ORI:  ControlValues = 14'b0_00_0_101_00_00_101;  
+		I_Type_ANDI: ControlValues = 14'b0_00_0_101_00_00_110;
+		BEQ:         ControlValues = 14'b0_00_0_000_00_01_001;
+		BNE:         ControlValues = 14'b0_00_0_000_00_10_001;
+		J:           ControlValues = 14'b0_01_0_000_00_00_000;
+		JAL:         ControlValues = 14'b0_11_0_001_00_00_000;
+		LUI:         ControlValues = 14'b1_00_0_001_00_00_000;
+		default:     ControlValues = 14'b0;
 		endcase
 end	
 
+assign LoadUpperImmediate = ControlValues[13];
 assign JumpAndLink = ControlValues[12];
 assign Jump = ControlValues[11];
 assign RegDst = ControlValues[10];

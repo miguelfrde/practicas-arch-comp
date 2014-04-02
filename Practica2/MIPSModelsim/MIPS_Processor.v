@@ -76,6 +76,9 @@ wire [31:0] ALUResultOrPC4_wire;
 wire JumpRegister_wire;
 wire [31:0] MUX_PC_JUMP_REG_wire;
 
+wire LoadUpperImmediate_wire;
+wire [31:0] ALUResultOrPC4OrLui_wire;
+
 integer ALUStatus;
 
 
@@ -95,7 +98,8 @@ ControlUnit
 	.ALUSrc(ALUSrc_wire),
 	.RegWrite(RegWrite_wire),
 	.Jump(Jump_wire),
-	.JumpAndLink(JumpAndLink_wire)
+	.JumpAndLink(JumpAndLink_wire),
+	.LoadUpperImmediate(LoadUpperImmediate_wire)
 );
 
 PC_Register
@@ -265,7 +269,7 @@ Register_File
 	.WriteRegister(WriteRegisterOrRA_wire),
 	.ReadRegister1(Instruction_wire[25:21]),
 	.ReadRegister2(Instruction_wire[20:16]),
-	.WriteData(ALUResultOrPC4_wire),
+	.WriteData(ALUResultOrPC4OrLui_wire),
 	.ReadData1(ReadData1_wire),
 	.ReadData2(ReadData2_wire)
 
@@ -323,6 +327,18 @@ MUX_ForALUResultAndPC4
 	.MUX_Data0(ALUResult_wire),
 	.MUX_Data1(PC_4_wire),
 	.MUX_Output(ALUResultOrPC4_wire)
+);
+
+Multiplexer2to1
+#(
+	.NBits(32)
+)
+MUX_ForALUResultAndPC4AndLUI
+(
+	.Selector(LoadUpperImmediate_wire),
+	.MUX_Data0(ALUResultOrPC4_wire),
+	.MUX_Data1({Instruction_wire[15:0], 16'b0}),
+	.MUX_Output(ALUResultOrPC4OrLui_wire)
 );
 
 assign ALUResultOut = ALUResult_wire;
