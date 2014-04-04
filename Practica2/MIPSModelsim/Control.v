@@ -17,7 +17,7 @@ module Control
 	output BranchEQ,
 	output BranchNE,
 	output MemRead,
-	output MemtoReg,
+	output MemToReg,
 	output MemWrite,
 	output ALUSrc,
 	output RegWrite,
@@ -31,6 +31,8 @@ localparam R_Type = 0;
 localparam I_Type_ADDI = 6'h8;
 localparam I_Type_ORI = 6'h0d;
 localparam I_Type_ANDI = 6'h0c;
+localparam I_Type_SW = 6'h2b;
+localparam I_Type_LW = 6'h23;
 localparam BEQ = 6'h4;
 localparam BNE = 6'h5;
 localparam J = 6'h2;
@@ -50,6 +52,8 @@ always@(OP) begin
 		J:           ControlValues = 14'b0_01_0_000_00_00_000;
 		JAL:         ControlValues = 14'b0_11_0_001_00_00_000;
 		LUI:         ControlValues = 14'b1_00_0_001_00_00_000;
+		I_Type_SW:	 ControlValues = 14'b0_00_0_100_01_00_100;
+		I_Type_LW:	 ControlValues = 14'b0_00_0_111_10_00_100;
 		default:     ControlValues = 14'b0;
 		endcase
 end	
@@ -59,7 +63,7 @@ assign JumpAndLink = ControlValues[12];
 assign Jump = ControlValues[11];
 assign RegDst = ControlValues[10];
 assign ALUSrc = ControlValues[9];
-assign MemtoReg = ControlValues[8];
+assign MemToReg = ControlValues[8];
 assign RegWrite = ControlValues[7];
 assign MemRead = ControlValues[6];
 assign MemWrite = ControlValues[5];
