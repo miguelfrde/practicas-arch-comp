@@ -14,14 +14,17 @@ module DataMemory
 reg [DATA_WIDTH-1:0] ram[2**ADDR_SIZE-1:0];
 wire [DATA_WIDTH-1:0] ReadDataAux;
 
+wire [ADDR_SIZE-1:0] RealAddress;
+assign RealAddress = Address >> 2;
+
 always @ (posedge clk)
 begin
 	// Write
 	if (MemWrite)
-		ram[Address] <= WriteData;
+		ram[RealAddress] <= WriteData;
 end
 
-assign ReadDataAux = ram[Address];
+assign ReadDataAux = ram[RealAddress];
 assign ReadData = {DATA_WIDTH{MemRead}}& ReadDataAux;
 
 endmodule
