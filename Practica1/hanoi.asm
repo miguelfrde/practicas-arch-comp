@@ -16,6 +16,7 @@
 
 .text 
 
+	addi $sp, $zero, 0x10011000
 	addi $a0, $zero, 4	#  n = number of disks
 	addi $a1, $zero, 268500992
 	addi $a2, $zero, 268501024
