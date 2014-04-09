@@ -97,6 +97,7 @@ Control
 ControlUnit
 (
 	.OP(Instruction_wire[31:26]),
+	.funct(Instruction_wire[5:0]),
 	.RegDst(RegDst_wire),
 	.BranchNE(BranchNE_wire),
 	.BranchEQ(BranchEQ_wire),
@@ -108,7 +109,8 @@ ControlUnit
 	.LoadUpperImmediate(LoadUpperImmediate_wire),
 	.MemToReg(MemToReg_wire),
 	.MemWrite(MemWrite_wire),
-	.MemRead(MemRead_wire)
+	.MemRead(MemRead_wire),
+	.JumpRegister(JumpRegister_wire)
 );
 
 PC_Register
@@ -308,8 +310,7 @@ ArithmeticLogicUnitControl
 (
 	.ALUOp(ALUOp_wire),
 	.ALUFunction(Instruction_wire[5:0]),
-	.ALUOperation(ALUOperation_wire),
-	.JumpRegister(JumpRegister_wire)
+	.ALUOperation(ALUOperation_wire)
 );
 
 ALU

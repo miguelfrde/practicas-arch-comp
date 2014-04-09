@@ -11,7 +11,8 @@
 ******************************************************************/
 module Control
 (
-	input [5:0]OP,
+	input [5:0] OP,
+	input [5:0] funct,
 	
 	output RegDst,
 	output BranchEQ,
@@ -24,6 +25,7 @@ module Control
 	output Jump,
 	output JumpAndLink,
 	output LoadUpperImmediate,
+	output JumpRegister,
 	output [2:0]ALUOp
 );
 
@@ -70,6 +72,7 @@ assign MemWrite = ControlValues[5];
 assign BranchNE = ControlValues[4];
 assign BranchEQ = ControlValues[3];
 assign ALUOp = ControlValues[2:0];
+assign JumpRegister = OP == R_Type && funct == 6'h8;
 	
 
 endmodule
