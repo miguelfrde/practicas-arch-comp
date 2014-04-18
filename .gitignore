@@ -23,6 +23,11 @@ Practica2/MIPSModelsim/work/*
 Practica2/MIPSModelsim/ALUResult.dat
 Practica2/MIPSModelsim/wave.do
 Practica2/MIPSModelsim/sim.do
+Practica3/MIPSQuartusII/*
+Practica3/MIPSModelsim/work/*
+Practica3/MIPSModelsim/ALUResult.dat
+Practica3/MIPSModelsim/wave.do
+Practica3/MIPSModelsim/sim.do
 *.cr.mti
 *.mpf
 *.vcd
