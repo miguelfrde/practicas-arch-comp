@@ -221,20 +221,15 @@ PC_Puls_4
 	.Result(IF_PC_4_wire)
 );
 
-Pipeline_Reg
-#(
-	.SIZE(64)
-)
-IF_ID_Register
+IF_ID_Register Register_IF_to_ID
 (
     .clk(clk),
-    .reset(reset),
-    .DataIn({IF_Instruction_wire, IF_PC_4_wire}),
-	 .DataOut(IF_Reg_Data)
+	 .reset(reset),
+	 .IF_Instruction(IF_Instruction_wire),
+	 .IF_PC_4(IF_PC_4_wire),
+	 .ID_Instruction(ID_Instruction_wire),
+	 .ID_PC_4(ID_PC_4_wire)
 );
-
-assign ID_Instruction_wire = IF_Reg_Data[63:32];
-assign ID_PC_4_wire = IF_Reg_Data[31:0];
 
 
 /*****************************************************************************************************
@@ -292,39 +287,45 @@ SignExtendForConstants
    .SignExtendOutput(ID_ImmediateExtend_wire)
 );
 
-Pipeline_Reg
-#(
-	.SIZE(174)
-)
-ID_EX_Register
+ID_EX_Register Register_ID_to_EX
 (
     .clk(clk),
-    .reset(reset),
-    .DataIn({ID_JumpRegister_wire, ID_BranchNE_wire, ID_BranchEQ_wire,
-				ID_RegDst_wire, ID_ReadData1_wire, ID_ImmediateExtend_wire, ID_ALUOp_wire, ID_ALUSrc_wire, // Needed by EX
-				ID_ReadData2_wire, ID_MemToReg_wire, ID_MemWrite_wire, ID_MemRead_wire, // Needed by MEM
-				ID_RegWrite_wire, ID_JumpAndLink_wire, ID_LoadUpperImmediate_wire, // Needed by WB
-				ID_Instruction_wire, ID_PC_4_wire}), // Needed by all pipeline stages
-	 .DataOut(ID_Reg_Data)
+	 .reset(reset),
+	 .ID_JumpRegister(ID_JumpRegister_wire),
+	 .ID_BranchNE(ID_BranchNE_wire),
+	 .ID_BranchEQ(ID_BranchEQ_wire),
+	 .ID_RegDst(ID_RegDst_wire),
+	 .ID_ReadData1(ID_ReadData1_wire),
+	 .ID_ImmediateExtend(ID_ImmediateExtend_wire),
+	 .ID_ALUOp(ID_ALUOp_wire),
+	 .ID_ALUSrc(ID_ALUSrc_wire),
+	 .ID_ReadData2(ID_ReadData2_wire),
+	 .ID_MemToReg(ID_MemToReg_wire),
+	 .ID_MemWrite(ID_MemWrite_wire),
+	 .ID_MemRead(ID_MemRead_wire),
+	 .ID_RegWrite(ID_RegWrite_wire),
+	 .ID_JumpAndLink(ID_JumpAndLink_wire),
+	 .ID_LoadUpperImmediate(ID_LoadUpperImmediate_wire),
+	 .ID_Instruction(ID_Instruction_wire),
+	 .ID_PC_4(ID_PC_4_wire),
+	 .EX_JumpRegister(EX_JumpRegister_wire),
+	 .EX_BranchNE(EX_BranchNE_wire),
+	 .EX_BranchEQ(EX_BranchEQ_wire),
+	 .EX_RegDst(EX_RegDst_wire),
+	 .EX_ReadData1(EX_ReadData1_wire),
+	 .EX_ImmediateExtend(EX_ImmediateExtend_wire),
+	 .EX_ALUOp(EX_ALUOp_wire),
+	 .EX_ALUSrc(EX_ALUSrc_wire),
+	 .EX_ReadData2(EX_ReadData2_wire),
+	 .EX_MemToReg(EX_MemToReg_wire),
+	 .EX_MemWrite(EX_MemWrite_wire),
+	 .EX_MemRead(EX_MemRead_wire),
+	 .EX_RegWrite(EX_RegWrite_wire),
+	 .EX_JumpAndLink(EX_JumpAndLink_wire),
+	 .EX_LoadUpperImmediate(EX_LoadUpperImmediate_wire),
+	 .EX_Instruction(EX_Instruction_wire),
+	 .EX_PC_4(EX_PC_4_wire)
 );
-
-assign EX_JumpRegister_wire = ID_Reg_Data[173];
-assign EX_BranchNE_wire = ID_Reg_Data[172];
-assign EX_BranchEQ_wire = ID_Reg_Data[171];
-assign EX_RegDst_wire = ID_Reg_Data[170];
-assign EX_ReadData1_wire = ID_Reg_Data[169:138];
-assign EX_ImmediateExtend_wire = ID_Reg_Data[137:106];
-assign EX_ALUOp_wire = ID_Reg_Data[105:103];
-assign EX_ALUSrc_wire = ID_Reg_Data[102];
-assign EX_ReadData2_wire = ID_Reg_Data[101:70];
-assign EX_MemToReg_wire = ID_Reg_Data[69];
-assign EX_MemWrite_wire = ID_Reg_Data[68];
-assign EX_MemRead_wire = ID_Reg_Data[67];
-assign EX_RegWrite_wire = ID_Reg_Data[66];
-assign EX_JumpAndLink_wire = ID_Reg_Data[65];
-assign EX_LoadUpperImmediate_wire = ID_Reg_Data[64];
-assign EX_Instruction_wire = ID_Reg_Data[63:32];
-assign EX_PC_4_wire = ID_Reg_Data[31:0];
 
 
 /*****************************************************************************************************
@@ -407,38 +408,41 @@ MUX_ForRTypeAndITypeOrRA
 	.MUX_Output(EX_WriteRegister_wire)
 );
 
-// PIPELINE REG
-Pipeline_Reg
-#(
-	.SIZE(174)
-)
-EX_MEM_Register
+EX_MEM_Register Register_EX_to_MEM
 (
     .clk(clk),
-    .reset(reset),
-    .DataIn({EX_BranchNE_wire, EX_BranchEQ_wire,
-				 EX_WriteRegister_wire, EX_ALUResult_wire, EX_Zero_wire, EX_PCtoBranch_wire,
-				 EX_ReadData2_wire, EX_MemToReg_wire, EX_MemWrite_wire, EX_MemRead_wire, // Needed by MEM
-				 EX_RegWrite_wire, EX_JumpAndLink_wire, EX_LoadUpperImmediate_wire, // Needed by WB
-				 EX_Instruction_wire, EX_PC_4_wire}), // Needed by all pipeline stages
-	 .DataOut(EX_Reg_Data)
+	 .reset(reset),
+	 .EX_BranchNE(EX_BranchNE_wire),
+	 .EX_BranchEQ(EX_BranchEQ_wire),
+	 .EX_WriteRegister(EX_WriteRegister_wire),
+	 .EX_ALUResult(EX_ALUResult_wire),
+	 .EX_Zero(EX_Zero_wire),
+	 .EX_PCtoBranch(EX_PCtoBranch_wire),
+	 .EX_ReadData2(EX_ReadData2_wire),
+	 .EX_MemToReg(EX_MemToReg_wire),
+	 .EX_MemWrite(EX_MemWrite_wire),
+	 .EX_MemRead(EX_MemRead_wire),
+	 .EX_RegWrite(EX_RegWrite_wire),
+	 .EX_JumpAndLink(EX_JumpAndLink_wire),
+	 .EX_LoadUpperImmediate(EX_LoadUpperImmediate_wire),
+	 .EX_Instruction(EX_Instruction_wire),
+	 .EX_PC_4(EX_PC_4_wire),
+	 .MEM_BranchNE(MEM_BranchNE_wire),
+	 .MEM_BranchEQ(MEM_BranchEQ_wire),
+	 .MEM_WriteRegister(MEM_WriteRegister_wire),
+	 .MEM_ALUResult(MEM_ALUResult_wire),
+	 .MEM_Zero(MEM_Zero_wire),
+	 .MEM_PCtoBranch(MEM_PCtoBranch_wire),
+	 .MEM_ReadData2(MEM_ReadData2_wire),
+	 .MEM_MemToReg(MEM_MemToReg_wire),
+	 .MEM_MemWrite(MEM_MemWrite_wire),
+	 .MEM_MemRead(MEM_MemRead_wire),
+	 .MEM_RegWrite(MEM_RegWrite_wire),
+	 .MEM_JumpAndLink(MEM_JumpAndLink_wire),
+	 .MEM_LoadUpperImmediate(MEM_LoadUpperImmediate_wire),
+	 .MEM_Instruction(MEM_Instruction_wire),
+	 .MEM_PC_4(MEM_PC_4_wire)
 );
-
-assign MEM_BranchNE_wire = EX_Reg_Data[173];
-assign MEM_BranchEQ_wire = EX_Reg_Data[172];
-assign MEM_WriteRegister_wire = EX_Reg_Data[171:167];
-assign MEM_ALUResult_wire = EX_Reg_Data[166:135];
-assign MEM_Zero_wire = EX_Reg_Data[134];
-assign MEM_PCtoBranch_wire = EX_Reg_Data[133:102];
-assign MEM_ReadData2_wire = EX_Reg_Data[101:70];
-assign MEM_MemToReg_wire = EX_Reg_Data[69];
-assign MEM_MemWrite_wire = EX_Reg_Data[68];
-assign MEM_MemRead_wire = EX_Reg_Data[67];
-assign MEM_RegWrite_wire = EX_Reg_Data[66];
-assign MEM_JumpAndLink_wire = EX_Reg_Data[65];
-assign MEM_LoadUpperImmediate_wire = EX_Reg_Data[64];
-assign MEM_Instruction_wire = EX_Reg_Data[63:32];
-assign MEM_PC_4_wire = EX_Reg_Data[31:0];
 
 
 /*****************************************************************************************************
@@ -487,30 +491,30 @@ RAMDataMemory
 	.MemRead(MEM_MemRead_wire),
 	.ReadData(MEM_MemoryData_wire)
 );
-// PIPELINE REG
-Pipeline_Reg
-#(
-	.SIZE(137)
-)
-MEM_WB_Register
+
+MEM_WB_Register Register_MEM_to_WB
 (
     .clk(clk),
-    .reset(reset),
-    .DataIn({MEM_MemToReg_wire, MEM_MemoryData_wire, MEM_WriteRegister_wire, MEM_ALUResult_wire,
-				 MEM_RegWrite_wire, MEM_JumpAndLink_wire, MEM_LoadUpperImmediate_wire, // Needed by WB
-				 MEM_Instruction_wire, MEM_PC_4_wire}), // Needed by all pipeline stages
-	 .DataOut(MEM_Reg_Data)
+	 .reset(reset),
+	 .MEM_MemToReg(MEM_MemToReg_wire),
+	 .MEM_MemoryData(MEM_MemoryData_wire),
+	 .MEM_WriteRegister(MEM_WriteRegister_wire),
+	 .MEM_ALUResult(MEM_ALUResult_wire),
+	 .MEM_RegWrite(MEM_RegWrite_wire),
+	 .MEM_JumpAndLink(MEM_JumpAndLink_wire),
+	 .MEM_LoadUpperImmediate(MEM_LoadUpperImmediate_wire),
+	 .MEM_Instruction(MEM_Instruction_wire),
+	 .MEM_PC_4(MEM_PC_4_wire),
+	 .WB_MemToReg(WB_MemToReg_wire),
+	 .WB_MemoryData(WB_MemoryData_wire),
+	 .WB_WriteRegister(WB_WriteRegister_wire),
+	 .WB_ALUResult(WB_ALUResult_wire),
+	 .WB_RegWrite(WB_RegWrite_wire),
+	 .WB_JumpAndLink(WB_JumpAndLink_wire),
+	 .WB_LoadUpperImmediate(WB_LoadUpperImmediate_wire),
+	 .WB_Instruction(WB_Instruction_wire),
+	 .WB_PC_4(WB_PC_4_wire)
 );
-
-assign WB_MemToReg_wire = MEM_Reg_Data[136];
-assign WB_MemoryData_wire = MEM_Reg_Data[135:104];
-assign WB_WriteRegister_wire = MEM_Reg_Data[103:99];
-assign WB_ALUResult_wire = MEM_Reg_Data[98:67];
-assign WB_RegWrite_wire = MEM_Reg_Data[66];
-assign WB_JumpAndLink_wire = MEM_Reg_Data[65];
-assign WB_LoadUpperImmediate_wire = MEM_Reg_Data[64];
-assign WB_Instruction_wire = MEM_Reg_Data[63:32];
-assign WB_PC_4_wire = MEM_Reg_Data[31:0];
 
 
 /*****************************************************************************************************
