@@ -3,13 +3,13 @@
 
 Prácticas de la clase de Arquitectura de Computadoras, Primavera 2014.
 
-Práctica 1
-----------
+# Práctica 1
+
 
 Abrir asm en MARS y ejecutarlo ahí.
 
-Práctica 2
-----------
+# Práctica 2
+
 
 Para editar: añadir la carpeta `Practica2/MIPSQuartusII` y ahí poner el proyecto de Quartus.
 
@@ -26,3 +26,15 @@ run 200
 ```
 4. Añadir archivo `text.dat` que contenga el programa en "Hexadecimal text", tal cual como MARS lo generó.
 5. Ejecutar: `do sim.do`
+
+# Práctica 3
+
+
+Hacer lo mismo que con la dos pero en el directorio `Practica3`.
+
+
+# Esquemático
+
+## Uniciclo
+
+![Procesador uniciclo](mips.png)
