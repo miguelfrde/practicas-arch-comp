@@ -15,6 +15,7 @@ module EX_MEM_Register
     input EX_RegWrite,
     input EX_JumpAndLink,
     input EX_LoadUpperImmediate,
+	 input EX_ALUSrc,
     input [31:0] EX_Instruction,
     input [31:0] EX_PC_4,
 	 output MEM_BranchNE,
@@ -29,6 +30,7 @@ module EX_MEM_Register
     output MEM_MemRead,
     output MEM_RegWrite,
     output MEM_JumpAndLink,
+	 output MEM_ALUSrc,
     output MEM_LoadUpperImmediate,
     output [31:0] MEM_Instruction,
     output [31:0] MEM_PC_4
@@ -45,6 +47,7 @@ reg MemToReg;
 reg MemWrite;
 reg MemRead;
 reg RegWrite;
+reg AluSrc;
 reg JumpAndLink;
 reg LoadUpperImmediate;
 reg [31:0] Instruction;
@@ -65,6 +68,7 @@ assign MEM_JumpAndLink = JumpAndLink;
 assign MEM_LoadUpperImmediate = LoadUpperImmediate;
 assign MEM_Instruction = Instruction;
 assign MEM_PC_4 = PC_4;
+assign MEM_ALUSrc = AluSrc;
 
 always @(negedge reset or posedge clk) begin
     if (!reset)
@@ -82,6 +86,7 @@ always @(negedge reset or posedge clk) begin
         RegWrite <= 1'b0;
         JumpAndLink <= 1'b0;
         LoadUpperImmediate <= 1'b0;
+		  AluSrc <= 1'b0;
         Instruction <= 32'b0;
         PC_4 = 32'b0;
       end
@@ -102,6 +107,7 @@ always @(negedge reset or posedge clk) begin
         LoadUpperImmediate <= EX_LoadUpperImmediate;
         Instruction <= EX_Instruction;
         PC_4 <= EX_PC_4;
+		  AluSrc <= EX_ALUSrc;
 		end
 end
 

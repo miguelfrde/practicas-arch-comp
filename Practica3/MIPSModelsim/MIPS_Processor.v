@@ -132,6 +132,13 @@ wire [31:0] MUX_PC_wire;
 wire [31:0] MUX_PC_JUMP_wire;
 wire [31:0] MUX_PC_JUMP_REG_wire;
 
+wire [1:0] ForwardA_wire;
+wire [1:0] ForwardB_wire;
+wire [31:0] ForwardedA_wire;
+wire [31:0] ForwardedB_wire;
+wire MEM_ALUSrc_wire;
+wire WB_ALUSrc_wire;
+
 integer ALUStatus;
 
 
@@ -356,7 +363,7 @@ Multiplexer2to1
 MUX_ForReadDataAndInmediate
 (
 	.Selector(EX_ALUSrc_wire),
-	.MUX_Data0(EX_ReadData2_wire),
+	.MUX_Data0(ForwardedB_wire),
 	.MUX_Data1(EX_ImmediateExtend_wire),
 	
 	.MUX_Output(EX_ReadData2OrImmediate_wire)
@@ -371,11 +378,39 @@ ArithmeticLogicUnitControl
 	.ALUOperation(EX_ALUOperation_wire)
 );
 
+//MUX for forwarding A
+Multiplexer3to1
+#(
+	.NBits(32)
+)
+MUX_ForForwardingA
+(
+	.Selector(ForwardA_wire),
+	.MUX_Data0(EX_ReadData1_wire),
+	.MUX_Data1(WB_WriteData_wire),
+	.MUX_Data2(MEM_ALUResult_wire),	
+	.MUX_Output(ForwardedA_wire)
+);
+
+//MUX for forwarding B
+Multiplexer3to1
+#(
+	.NBits(32)
+)
+MUX_ForForwardingB
+(
+	.Selector(ForwardB_wire),
+	.MUX_Data0(EX_ReadData2_wire),
+	.MUX_Data1(WB_WriteData_wire),
+	.MUX_Data2(MEM_ALUResult_wire),	
+	.MUX_Output(ForwardedB_wire)
+);
+
 ALU
 ArithmeticLogicUnit 
 (
 	.ALUOperation(EX_ALUOperation_wire),
-	.A(EX_ReadData1_wire),
+	.A(ForwardedA_wire),
 	.B(EX_ReadData2OrImmediate_wire),
 	.shamt(EX_Instruction_wire[10:6]),
 	.Zero(EX_Zero_wire),
@@ -412,6 +447,7 @@ EX_MEM_Register Register_EX_to_MEM
 (
     .clk(clk),
 	 .reset(reset),
+	 .EX_ALUSrc(EX_ALUSrc_wire),
 	 .EX_BranchNE(EX_BranchNE_wire),
 	 .EX_BranchEQ(EX_BranchEQ_wire),
 	 .EX_WriteRegister(EX_WriteRegister_wire),
@@ -441,7 +477,26 @@ EX_MEM_Register Register_EX_to_MEM
 	 .MEM_JumpAndLink(MEM_JumpAndLink_wire),
 	 .MEM_LoadUpperImmediate(MEM_LoadUpperImmediate_wire),
 	 .MEM_Instruction(MEM_Instruction_wire),
-	 .MEM_PC_4(MEM_PC_4_wire)
+	 .MEM_PC_4(MEM_PC_4_wire),
+	 .MEM_ALUSrc(MEM_ALUSrc_wire)
+);
+
+//FORWARDING UNIT
+ForwardingUnit Forwarding_Unit
+(
+	.ID_EX_Rs(EX_Instruction_wire[25:21]),
+	.ID_EX_Rt(EX_Instruction_wire[20:16]),
+	.EX_MEM_Rd(MEM_Instruction_wire[15:11]),
+	.EX_MEM_Rt(MEM_Instruction_wire[20:16]),
+	.EX_MEM_RegWrite(MEM_RegWrite_wire),
+	.MEM_WB_RegWrite(WB_RegWrite_wire),
+	.MEM_WB_Rd(WB_Instruction_wire[15:11]),
+	.ID_EX_ALUSrc(EX_ALUSrc_wire),
+	.EX_MEM_ALUSrc(MEM_ALUSrc_wire),
+	.MEM_WB_ALUSrc(WB_ALUSrc_wire),
+	.MEM_WB_Rt(WB_Instruction_wire[20:16]),
+	.ForwardA(ForwardA_wire),
+	.ForwardB(ForwardB_wire)
 );
 
 
@@ -505,6 +560,7 @@ MEM_WB_Register Register_MEM_to_WB
 	 .MEM_LoadUpperImmediate(MEM_LoadUpperImmediate_wire),
 	 .MEM_Instruction(MEM_Instruction_wire),
 	 .MEM_PC_4(MEM_PC_4_wire),
+	 .MEM_ALUSrc(MEM_ALUSrc_wire),
 	 .WB_MemToReg(WB_MemToReg_wire),
 	 .WB_MemoryData(WB_MemoryData_wire),
 	 .WB_WriteRegister(WB_WriteRegister_wire),
@@ -513,7 +569,8 @@ MEM_WB_Register Register_MEM_to_WB
 	 .WB_JumpAndLink(WB_JumpAndLink_wire),
 	 .WB_LoadUpperImmediate(WB_LoadUpperImmediate_wire),
 	 .WB_Instruction(WB_Instruction_wire),
-	 .WB_PC_4(WB_PC_4_wire)
+	 .WB_PC_4(WB_PC_4_wire),
+	 .WB_ALUSrc(WB_ALUSrc_wire)
 );
 
 

@@ -12,7 +12,7 @@ module Register
 	output reg [N-1:0] DataOutput
 );
 
-always@(negedge reset or posedge clk) begin
+always@(*) begin
 	if(reset==0)
 		DataOutput <= 0;
 	else	

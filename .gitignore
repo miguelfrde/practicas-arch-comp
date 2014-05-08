@@ -32,6 +32,9 @@ Practica3/MIPSModelsim/sim.do
 *.mpf
 *.vcd
 *.wlf
+*.ipinfo
 wlft*
+*.docx
+*.tmp
 *.v.bak
 *.do.bak

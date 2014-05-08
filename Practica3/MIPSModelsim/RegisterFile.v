@@ -33,7 +33,7 @@ wire [31:0] SelectRegister_wire;
 `ifdef MONITORS
 reg [31:0]RegiterArray[0:31];
 
-always@(posedge clk) begin
+always@(*) begin
 	if(RegWrite)
 		RegiterArray[WriteRegister] <= WriteData;
 end

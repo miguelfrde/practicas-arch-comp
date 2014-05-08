@@ -11,6 +11,7 @@ module MEM_WB_Register
     input MEM_LoadUpperImmediate,
     input [31:0] MEM_Instruction,
     input [31:0] MEM_PC_4,
+	 input MEM_ALUSrc,
 	 output WB_MemToReg,
 	 output [31:0] WB_MemoryData,
 	 output [4:0] WB_WriteRegister,
@@ -19,7 +20,8 @@ module MEM_WB_Register
     output WB_JumpAndLink,
     output WB_LoadUpperImmediate,
     output [31:0] WB_Instruction,
-    output [31:0] WB_PC_4
+    output [31:0] WB_PC_4,
+	 output WB_ALUSrc
 );
 
 reg MemToReg;
@@ -31,6 +33,7 @@ reg JumpAndLink;
 reg LoadUpperImmediate;
 reg [31:0] Instruction;
 reg [31:0] PC_4;
+reg ALUSrc;
 
 assign WB_MemToReg = MemToReg;
 assign WB_MemoryData = MemoryData;
@@ -40,6 +43,7 @@ assign WB_RegWrite = RegWrite;
 assign WB_JumpAndLink = JumpAndLink;
 assign WB_LoadUpperImmediate = LoadUpperImmediate;
 assign WB_Instruction = Instruction;
+assign WB_ALUSrc = ALUSrc;
 assign WB_PC_4 = PC_4;
 
 always @(negedge reset or posedge clk) begin
@@ -54,6 +58,7 @@ always @(negedge reset or posedge clk) begin
         LoadUpperImmediate <= 1'b0;
         Instruction <= 32'b0;
         PC_4 = 32'b0;
+		  ALUSrc = 1'b0;
       end
 	 else
 	   begin
@@ -66,6 +71,7 @@ always @(negedge reset or posedge clk) begin
         LoadUpperImmediate <= MEM_LoadUpperImmediate;
         Instruction <= MEM_Instruction;
         PC_4 <= MEM_PC_4;
+		  ALUSrc <= MEM_ALUSrc;
 		end
 end
 
