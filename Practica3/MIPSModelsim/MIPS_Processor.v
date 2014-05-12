@@ -61,14 +61,18 @@ wire ID_MemWrite_wire;
 wire ID_MemRead_wire;
 wire ID_JumpRegister_wire;
 wire [31:0] ID_ImmediateExtend_wire;
+wire [31:0] ID_ImmediateExtendAndShifted_wire;
 wire [31:0] ID_ReadData1_wire;
 wire [31:0] ID_ReadData2_wire;
 wire [27:0] ID_JumpAddressShifted_wire;
 wire [173:0] ID_Reg_Data;
+wire [31:0] ID_PCtoBranch_wire;
+wire ID_branch_equals;
+wire ID_EqualsANDBrachEQ;
+wire ID_NotEqualsANDBrachNE;
+wire ID_ORForBranch;
 
 wire EX_JumpRegister_wire;
-wire EX_BranchNE_wire;
-wire EX_BranchEQ_wire;
 wire EX_RegDst_wire;
 wire [31:0] EX_ReadData1_wire;
 wire [31:0] EX_ImmediateExtend_wire;
@@ -86,20 +90,13 @@ wire [31:0] EX_PC_4_wire;
 wire [4:0] EX_WriteRegisterOrRA_wire;
 wire [4:0] EX_WriteRegister_wire;
 wire [4:0] EX_WriteRegisterOrI_wire;
-wire EX_Zero_wire;
 wire [3:0] EX_ALUOperation_wire;
 wire [31:0] EX_ALUResult_wire;
 wire [31:0] EX_ReadData2OrImmediate_wire;
-wire [31:0] EX_ImmediateExtendAndShifted_wire;
-wire [31:0] EX_PCtoBranch_wire;
 wire [173:0] EX_Reg_Data;
 
-wire MEM_BranchNE_wire;
-wire MEM_BranchEQ_wire;
 wire [4:0] MEM_WriteRegister_wire;
 wire [31:0] MEM_ALUResult_wire;
-wire MEM_Zero_wire;
-wire [31:0] MEM_PCtoBranch_wire;
 wire [31:0] MEM_ReadData2_wire;
 wire MEM_MemToReg_wire;
 wire MEM_MemWrite_wire;
@@ -109,9 +106,6 @@ wire MEM_JumpAndLink_wire;
 wire MEM_LoadUpperImmediate_wire;
 wire [31:0] MEM_Instruction_wire;
 wire [31:0] MEM_PC_4_wire;
-wire MEM_ZeroANDBrachEQ;
-wire MEM_NotZeroANDBrachNE;
-wire MEM_ORForBranch;
 wire [31:0] MEM_MemoryData_wire;
 wire [136:0] MEM_Reg_Data;
 
@@ -145,16 +139,40 @@ integer ALUStatus;
 /*****************************************************************************************************
  *                                   MUX FOR BRANCH, JUMP CONTROL                                    *
  *****************************************************************************************************/
- 
+
+ANDGate
+ANDGateForBEQ
+(
+	.A(ID_branch_equals),
+	.B(ID_BranchEQ_wire),
+	.C(ID_EqualsANDBrachEQ)
+);
+
+ANDGate
+ANDGateForBNE
+(
+	.A(~ID_branch_equals),
+	.B(ID_BranchNE_wire),
+	.C(ID_NotEqualsANDBrachNE)
+);
+
+ORGate
+ORGateForBNEOrBEQ
+(
+	.A(ID_EqualsANDBrachEQ),
+	.B(ID_NotEqualsANDBrachNE),
+	.C(ID_ORForBranch)
+);
+
 Multiplexer2to1
 #(
 	.NBits(32)
 )
 MUX_PC
 (
-	.Selector(MEM_ORForBranch),
+	.Selector(ID_ORForBranch),
 	.MUX_Data0(IF_PC_4_wire),
-	.MUX_Data1(MEM_PCtoBranch_wire),
+	.MUX_Data1(ID_PCtoBranch_wire),
 	.MUX_Output(MUX_PC_wire)
 
 );
@@ -278,6 +296,13 @@ Register_File
 
 );
 
+EqualsComparator
+Comparator
+(
+	.A(ID_ReadData1_wire),
+	.B(ID_ReadData2_wire),
+	.equals(ID_branch_equals)
+);
 
 // NOTE: Not sure if this is ok here or if it should be in EX
 ShiftLeft2
@@ -294,13 +319,26 @@ SignExtendForConstants
    .SignExtendOutput(ID_ImmediateExtend_wire)
 );
 
+ShiftLeft2
+Shifter 
+(   
+    .DataInput(ID_ImmediateExtend_wire),
+    .DataOutput(ID_ImmediateExtendAndShifted_wire)
+);
+
+Adder32bits
+AdderForBranching
+(
+    .Data0(ID_PC_4_wire),
+    .Data1(ID_ImmediateExtendAndShifted_wire),
+    .Result(ID_PCtoBranch_wire)
+);
+
 ID_EX_Register Register_ID_to_EX
 (
     .clk(clk),
 	 .reset(reset),
 	 .ID_JumpRegister(ID_JumpRegister_wire),
-	 .ID_BranchNE(ID_BranchNE_wire),
-	 .ID_BranchEQ(ID_BranchEQ_wire),
 	 .ID_RegDst(ID_RegDst_wire),
 	 .ID_ReadData1(ID_ReadData1_wire),
 	 .ID_ImmediateExtend(ID_ImmediateExtend_wire),
@@ -316,8 +354,6 @@ ID_EX_Register Register_ID_to_EX
 	 .ID_Instruction(ID_Instruction_wire),
 	 .ID_PC_4(ID_PC_4_wire),
 	 .EX_JumpRegister(EX_JumpRegister_wire),
-	 .EX_BranchNE(EX_BranchNE_wire),
-	 .EX_BranchEQ(EX_BranchEQ_wire),
 	 .EX_RegDst(EX_RegDst_wire),
 	 .EX_ReadData1(EX_ReadData1_wire),
 	 .EX_ImmediateExtend(EX_ImmediateExtend_wire),
@@ -338,23 +374,6 @@ ID_EX_Register Register_ID_to_EX
 /*****************************************************************************************************
  *                                 EXECUTION (EX) PIPELINE STAGE                                     *
  *****************************************************************************************************/
-
-// TODO: Move this to ID stage
-ShiftLeft2
-Shifter 
-(   
-	.DataInput(EX_ImmediateExtend_wire),
-   .DataOutput(EX_ImmediateExtendAndShifted_wire)
-);
-
-// TODO: Move this to ID stage
-Adder32bits
-AdderForBranching
-(
-	.Data0(EX_PC_4_wire),
-	.Data1(EX_ImmediateExtendAndShifted_wire),
-	.Result(EX_PCtoBranch_wire)
-);
 
 Multiplexer2to1
 #(
@@ -413,7 +432,6 @@ ArithmeticLogicUnit
 	.A(ForwardedA_wire),
 	.B(EX_ReadData2OrImmediate_wire),
 	.shamt(EX_Instruction_wire[10:6]),
-	.Zero(EX_Zero_wire),
 	.ALUResult(EX_ALUResult_wire)
 );
 
@@ -448,12 +466,8 @@ EX_MEM_Register Register_EX_to_MEM
     .clk(clk),
 	 .reset(reset),
 	 .EX_ALUSrc(EX_ALUSrc_wire),
-	 .EX_BranchNE(EX_BranchNE_wire),
-	 .EX_BranchEQ(EX_BranchEQ_wire),
 	 .EX_WriteRegister(EX_WriteRegister_wire),
 	 .EX_ALUResult(EX_ALUResult_wire),
-	 .EX_Zero(EX_Zero_wire),
-	 .EX_PCtoBranch(EX_PCtoBranch_wire),
 	 .EX_ReadData2(EX_ReadData2_wire),
 	 .EX_MemToReg(EX_MemToReg_wire),
 	 .EX_MemWrite(EX_MemWrite_wire),
@@ -463,12 +477,8 @@ EX_MEM_Register Register_EX_to_MEM
 	 .EX_LoadUpperImmediate(EX_LoadUpperImmediate_wire),
 	 .EX_Instruction(EX_Instruction_wire),
 	 .EX_PC_4(EX_PC_4_wire),
-	 .MEM_BranchNE(MEM_BranchNE_wire),
-	 .MEM_BranchEQ(MEM_BranchEQ_wire),
 	 .MEM_WriteRegister(MEM_WriteRegister_wire),
 	 .MEM_ALUResult(MEM_ALUResult_wire),
-	 .MEM_Zero(MEM_Zero_wire),
-	 .MEM_PCtoBranch(MEM_PCtoBranch_wire),
 	 .MEM_ReadData2(MEM_ReadData2_wire),
 	 .MEM_MemToReg(MEM_MemToReg_wire),
 	 .MEM_MemWrite(MEM_MemWrite_wire),
@@ -503,34 +513,6 @@ ForwardingUnit Forwarding_Unit
 /*****************************************************************************************************
  *                                   MEMORY (MEM) PIPELINE STAGE                                     *
  *****************************************************************************************************/
-
-// TODO: remove this, add COMPARISON module to ID stage
-ANDGate
-ANDGateForBEQ
-(
-	.A(MEM_Zero_wire),
-	.B(MEM_BranchEQ_wire),
-	.C(MEM_ZeroANDBrachEQ)
-);
-
-// TODO: remove this, add COMPARISON module to ID stage
-ANDGate
-ANDGateForBNE
-(
-	.A(~MEM_Zero_wire),
-	.B(MEM_BranchNE_wire),
-	.C(MEM_NotZeroANDBrachNE)
-);
-
-// TODO: remove this, add COMPARISON module to ID stage
-ORGate
-ORGateForBNEOrBEQ
-(
-	.A(MEM_ZeroANDBrachEQ),
-	.B(MEM_NotZeroANDBrachNE),
-	.C(MEM_ORForBranch)
-);
-
 
 DataMemory
 #(

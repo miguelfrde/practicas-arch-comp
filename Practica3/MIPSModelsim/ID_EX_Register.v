@@ -3,11 +3,9 @@ module ID_EX_Register
     input clk,
     input reset,
     input ID_JumpRegister,
-    input ID_BranchNE,
-    input ID_BranchEQ,
     input ID_RegDst,
     input [31:0] ID_ReadData1,
-    input [31:0] ID_ImmediateExtend,
+	 input [31:0] ID_ImmediateExtend,
     input [2:0] ID_ALUOp,
     input ID_ALUSrc,
     input [31:0] ID_ReadData2,
@@ -20,11 +18,9 @@ module ID_EX_Register
     input [31:0] ID_Instruction,
     input [31:0] ID_PC_4,
 	 output EX_JumpRegister,
-    output EX_BranchNE,
-    output EX_BranchEQ,
     output EX_RegDst,
     output [31:0] EX_ReadData1,
-    output [31:0] EX_ImmediateExtend,
+	 output [31:0] EX_ImmediateExtend,
     output [2:0] EX_ALUOp,
     output EX_ALUSrc,
     output [31:0] EX_ReadData2,
@@ -39,8 +35,6 @@ module ID_EX_Register
 );
 
 reg JumpRegister;
-reg BranchNE;
-reg BranchEQ;
 reg RegDst;
 reg [31:0] ReadData1;
 reg [31:0] ImmediateExtend;
@@ -57,8 +51,6 @@ reg [31:0] Instruction;
 reg [31:0] PC_4;
 
 assign EX_JumpRegister = JumpRegister;
-assign EX_BranchNE = BranchNE;
-assign EX_BranchEQ = BranchEQ;
 assign EX_RegDst = RegDst;
 assign EX_ReadData1 = ReadData1;
 assign EX_ImmediateExtend = ImmediateExtend;
@@ -78,11 +70,9 @@ always @(negedge reset or posedge clk) begin
     if (!reset)
 	   begin
         JumpRegister <= 1'b0;
-        BranchNE <= 1'b0;
-        BranchEQ <= 1'b0;
         RegDst <= 1'b0;
         ReadData1 <= 32'b0;
-        ImmediateExtend <= 1'b0;
+        ImmediateExtend <= 32'b0;
         ALUOp <= 3'b0;
         ALUSrc <= 1'b0;
         ReadData2 <= 32'b0;
@@ -98,8 +88,6 @@ always @(negedge reset or posedge clk) begin
 	 else
 	   begin
 	     JumpRegister <= ID_JumpRegister;
-        BranchNE <= ID_BranchNE;
-        BranchEQ <= ID_BranchEQ;
         RegDst <= ID_RegDst;
         ReadData1 <= ID_ReadData1;
         ImmediateExtend <= ID_ImmediateExtend;
