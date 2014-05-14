@@ -30,12 +30,16 @@
 	addi $t0, $zero, 7
         nop
         nop
-	sw $t0, 16($s0)
+	sw $t0, 12($s0)
 	addi $t0, $zero, 9
         nop
         nop
-	sw $t0, 20($s0)
+	sw $t0, 16($s0)
 	addi $t0, $zero, 0
+        nop
+        nop
+	sw $t0, 20($s0)
+	addi $t0, $zero, 2
         nop
         nop
 	sw $t0, 24($s0)
