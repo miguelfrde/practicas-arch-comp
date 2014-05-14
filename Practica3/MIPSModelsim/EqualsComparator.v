@@ -18,6 +18,6 @@ module EqualsComparator
     output equals
 );
 
-assign equals = (A - B) == 'b0;
+assign equals = (A - B) == 0;
 
 endmodule
