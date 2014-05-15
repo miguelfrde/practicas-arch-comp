@@ -14,6 +14,7 @@
 	addi $s1, $zero, 268501092   # Base address of B
 	addi $s2, $zero, 4           # N
 	addi $s3, $zero, 3           # M
+	add $t0, $zero, $zero        # i = 0
 	
 	addi $t0, $zero, 1
 	nop
@@ -135,16 +136,11 @@
         nop
         nop
 	sw $t0, 92($s0)	
-	
-	add $t0, $zero, $zero        # i = 0
-	nop
 	nop
 	nop	
 for_i: 
+	add $t1, $zero, $zero        # j = 0	
 	beq $t0, $s2, end_for_i      # until i == N
-	nop
-	add $t1, $zero, $zero        #   j = 0	
-	nop
 	nop
 	nop
 for_j:
